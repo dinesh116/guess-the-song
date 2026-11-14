@@ -177,10 +177,10 @@ const SONGS=[
 ];
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem('gtyt2_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('gtyt2_'+k,JSON.stringify(v))}catch(e){}}};
-let S=store.get('settings',{intro:10,guess:20,play:60,teams:"Team A, Team B",shuffle:false,app:true});
+let S=store.get('settings2',{intro:5,guess:10,play:60,teams:"Team A, Team B",shuffle:false,app:true});
 let starts=store.get('starts',{});
 $('sIntro').value=S.intro;$('sGuess').value=S.guess;$('sPlay').value=S.play;$('sTeams').value=S.teams;$('sShuffle').checked=S.shuffle;$('sApp').checked=S.app!==false;
-function saveSettings(){S={intro:+$('sIntro').value||10,guess:+$('sGuess').value||0,play:+$('sPlay').value||60,teams:$('sTeams').value,shuffle:$('sShuffle').checked,app:$('sApp').checked};store.set('settings',S)}
+function saveSettings(){S={intro:+$('sIntro').value||5,guess:+$('sGuess').value||0,play:+$('sPlay').value||60,teams:$('sTeams').value,shuffle:$('sShuffle').checked,app:$('sApp').checked};store.set('settings2',S)}
 ['sIntro','sGuess','sPlay','sTeams','sShuffle','sApp'].forEach(id=>$(id).addEventListener('change',saveSettings));
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 const st=i=>+starts[i]||0;
