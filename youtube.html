@@ -56,7 +56,7 @@ ol.list{padding-left:22px;text-align:left}ol.list li{margin:6px 0}
 <body>
 <div class="wrap">
   <h1>🎬 Guess the Song</h1>
-  <p class="sub">Bollywood edition · 32 songs · YouTube player built in</p>
+  <p class="sub">Bollywood edition · 33 songs · YouTube player built in</p>
 
   <section id="setup">
     <div class="card">
@@ -155,20 +155,21 @@ const SONGS=[
  {t:"Raabta",f:"Agent Vinod",y:2012,s:"Arijit Singh",yt:"piUHBTXsoiY"},
  {t:"Galliyan",f:"Ek Villain",y:2014,s:"Ankit Tiwari",yt:"i-EXgX279wU"},
  {t:"Gehra Hua",f:"Dhurandhar",y:2025,s:"Arijit Singh & Armaan Khan",yt:"i1o1p_DD6TU"},
- {t:"Saiyyan",f:"Jhoomo Re (album)",y:2007,s:"Kailash Kher",yt:"pqBKTLnowdM"},
- {t:"Saiyaara",f:"Saiyaara",y:2025,s:"Faheem Abdullah & Arslan Nizami",yt:"EAxjlMlUZEY"},
  {t:"Tere Hawaale",f:"Laal Singh Chaddha",y:2022,s:"Arijit Singh & Shilpa Rao",yt:"Z0VbANbyH2o"},
- {t:"Saibo",f:"Shor in the City",y:2011,s:"Shreya Ghoshal & Tochi Raina",yt:"GtNrQy90Ih4"},
- {t:"Bulleya",f:"Ae Dil Hai Mushkil",y:2016,s:"Amit Mishra & Shilpa Rao",yt:"zJ0KO4Kec3w"},
  {t:"Tumhi Ho Bandhu",f:"Cocktail",y:2012,s:"Neeraj Shridhar & Kavita Seth",yt:"W8OoagONXmg"},
  {t:"Pasoori",f:"Coke Studio Pakistan, Season 14",y:2022,s:"Ali Sethi & Shae Gill",yt:"5Eqb_-j3FDA"},
  {t:"Daaru Desi",f:"Cocktail",y:2012,s:"Benny Dayal & Shalmali Kholgade",yt:"rselze4jvXQ"},
  {t:"Uff Teri Adaa",f:"Karthik Calling Karthik",y:2010,s:"Shankar Mahadevan & Alyssa Mendonsa",yt:"-rSOvmWRG4Y"},
  {t:"Señorita",f:"Zindagi Na Milegi Dobara",y:2011,s:"Farhan Akhtar, Hrithik Roshan, Abhay Deol & María del Mar Fernández",yt:"NRAvWDSxfl0"},
- {t:"Ilahi",f:"Yeh Jawaani Hai Deewani",y:2013,s:"Arijit Singh",yt:"lSPNH_rYKIg"},
  {t:"Tu Jo Mila",f:"Bajrangi Bhaijaan",y:2015,s:"KK",yt:"CHQ4Sr1JzBo"},
  {t:"Zara Sa",f:"Jannat",y:2008,s:"KK",yt:"V1_5SHc21m8"},
- {t:"Dil Ibaadat",f:"Tum Mile",y:2009,s:"KK",yt:"IgITZfS7L_8"}
+ {t:"Dil Ibaadat",f:"Tum Mile",y:2009,s:"KK",yt:"IgITZfS7L_8"},
+ {t:"Teri Deewani",f:"Kailasa (album)",y:2006,s:"Kailash Kher",yt:"3R-q79a7n98"},
+ {t:"Tere Bina Zindagi Se Koi",f:"Aandhi",y:1975,s:"Lata Mangeshkar & Kishore Kumar",yt:"z30aULXvV2w"},
+ {t:"Ajeeb Dastan Hai Yeh",f:"Dil Apna Aur Preet Parai",y:1960,s:"Lata Mangeshkar",yt:"oN-_7lcOl1A"},
+ {t:"Yeh Chand Sa Roshan Chehra",f:"Kashmir Ki Kali",y:1964,s:"Mohammed Rafi",yt:"X5jWsaoBf-0"},
+ {t:"Chalte Chalte Mere Yeh Geet",f:"Chalte Chalte",y:1976,s:"Kishore Kumar",yt:"bQkRBvIBkeo"},
+ {t:"Abhi Na Jao Chhod Kar",f:"Hum Dono",y:1961,s:"Mohammed Rafi & Asha Bhosle",yt:"YHd3rYyP9Yk"}
 ];
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem('gtyt2_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('gtyt2_'+k,JSON.stringify(v))}catch(e){}}};
