@@ -73,8 +73,6 @@ ol.list{padding-left:22px;text-align:left}ol.list li{margin:6px 0}
       </div>
       <div style="margin-top:10px"><label>Teams (comma-separated, blank = no scoring)</label><input id="sTeams" type="text"></div>
       <div class="row" style="margin-top:10px"><label><input id="sShuffle" type="checkbox"> Shuffle song order</label></div>
-      <div class="row" style="margin-top:6px"><label><input id="sApp" type="checkbox"> <b>Play songs in the YouTube app</b> (ad-free with Premium)</label></div>
-      <div class="note">With this on, each round opens the song in your YouTube app. Come back to this page; it beeps and flashes when to pause and when to stop. Pause from the lock screen or Control Center.</div>
     </div>
     <div class="card" id="songList"></div>
     <div class="center"><button class="btn big" id="startBtn">Start the game ▶</button></div>
@@ -179,9 +177,9 @@ const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem('gtyt2_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('gtyt2_'+k,JSON.stringify(v))}catch(e){}}};
 let S=store.get('settings2',{intro:5,guess:10,play:60,teams:"Team A, Team B",shuffle:false,app:true});
 let starts=store.get('starts',{});
-$('sIntro').value=S.intro;$('sGuess').value=S.guess;$('sPlay').value=S.play;$('sTeams').value=S.teams;$('sShuffle').checked=S.shuffle;$('sApp').checked=S.app!==false;
-function saveSettings(){S={intro:+$('sIntro').value||5,guess:+$('sGuess').value||0,play:+$('sPlay').value||60,teams:$('sTeams').value,shuffle:$('sShuffle').checked,app:$('sApp').checked};store.set('settings2',S)}
-['sIntro','sGuess','sPlay','sTeams','sShuffle','sApp'].forEach(id=>$(id).addEventListener('change',saveSettings));
+$('sIntro').value=S.intro;$('sGuess').value=S.guess;$('sPlay').value=S.play;$('sTeams').value=S.teams;$('sShuffle').checked=S.shuffle;
+function saveSettings(){S={intro:+$('sIntro').value||5,guess:+$('sGuess').value||0,play:+$('sPlay').value||60,teams:$('sTeams').value,shuffle:$('sShuffle').checked};store.set('settings2',S)}
+['sIntro','sGuess','sPlay','sTeams','sShuffle'].forEach(id=>$(id).addEventListener('change',saveSettings));
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 const st=i=>+starts[i]||0;
 $('songList').innerHTML='<h2>Songs (host view: has answers)</h2><div class="note" style="margin-bottom:6px">“Start at” skips silence or a spoken intro (seconds). Leave 0 to start at the very beginning.</div>'+SONGS.map((s,i)=>`<div class="song"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><div><div class="t">${i+1}. ${esc(s.t)}</div><div class="m">${esc(s.f)} (${s.y}) · ${esc(s.s)}${s.v?' · <i>'+esc(s.v)+'</i>':''}</div></div><label style="white-space:nowrap">Start at <input type="number" min="0" style="width:64px" value="${st(i)}" data-s="${i}"></label></div></div>`).join('');
@@ -203,7 +201,7 @@ const vidNow=()=>{try{return (yp.getVideoData()||{}).video_id}catch(e){return ''
 /* ---------- helpers ---------- */
 let order=[],idx=0,scores={},teams=[],phase='ready',timer=null,endAt=0,lastT=0,audioCtx=null,musicPhase=false;
 const ci=()=>order[idx];
-const APP=()=>S.app!==false;
+const APP=()=>false;
 const appHref=()=>{const s=SONGS[order[idx]],t=st(order[idx]);return `https://www.youtube.com/watch?v=${s.yt}${t?'&t='+t+'s':''}`};
 const cur=()=>SONGS[ci()];
 function show(id){['setup','game','end'].forEach(x=>$(x).classList.toggle('hidden',x!==id));window.scrollTo(0,0)}
