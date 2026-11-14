@@ -88,7 +88,7 @@ ol.list{padding-left:22px;text-align:left}ol.list li{margin:6px 0}
         <div class="cover" id="cover">🎵 Mystery song<small id="coverNote">hidden until the reveal</small></div>
       </div>
       <div id="manualNote" class="alert hidden">This song isn't on Spotify. Play it from another app; the page will beep when to pause and stop.</div>
-      <div id="previewNote" class="note hidden">Spotify is playing 30-second previews. Sign in at open.spotify.com in this browser for full songs.</div>
+      <div id="previewNote" class="alert hidden"><b>Spotify is only playing a 30-second preview</b>, which comes from the middle of the song, not the start. On iPhone: Settings → Apps → Safari → turn off <b>Prevent Cross-Site Tracking</b>, sign in at open.spotify.com in Safari, then reload this page.</div>
 
       <div id="vReady"><button class="btn big" id="introBtn">▶ Play the intro</button></div>
 
@@ -181,12 +181,13 @@ $('songList').innerHTML='<h2>Songs (host view: has answers)</h2>'+SONGS.map((s,i
 
 /* ---------- Spotify embed ---------- */
 let ctl=null, apiReady=false, sp={paused:true,pos:0,dur:0,updates:0};
+const isPreview=()=>sp.dur>0&&sp.dur<=31000;
 window.onSpotifyIframeApiReady=(API)=>{
   const first=SONGS.find(s=>s.id);
   API.createController($('embed'),{uri:'spotify:track:'+first.id,width:'100%',height:152},(c)=>{
     ctl=c;apiReady=true;$('apiStatus').textContent='✅ Spotify player ready';
     c.addListener('playback_update',e=>{const d=e.data||{};sp.paused=!!d.isPaused;sp.pos=d.position||0;sp.dur=d.duration||0;sp.updates++;
-      $('previewNote').classList.toggle('hidden',!(sp.dur>0&&sp.dur<=31000));});
+      $('previewNote').classList.toggle('hidden',!isPreview());});
   });
 };
 setTimeout(()=>{if(!apiReady)$('apiStatus').innerHTML='⚠️ Spotify player didn\'t load. Check your internet connection, or put this file on a website (see notes) and open it from there.'},12000);
@@ -215,7 +216,10 @@ function playFromStart(cb){
   const t0=performance.now();let hinted=false;
   clearInterval(window._waitIv);
   const iv=window._waitIv=setInterval(()=>{if(done)return;
-    if(!sp.paused&&sp.updates>u0){done=true;clearInterval(iv);$('tapHint').classList.add('hidden');cb();return}
+    if(!sp.paused&&sp.updates>u0){done=true;clearInterval(iv);$('tapHint').classList.add('hidden');
+      // make sure the clue starts at 0:00 even if Spotify resumed mid-song
+      if(sp.pos>1500&&!isPreview()){try{ctl.seek(0)}catch(e){}}
+      cb();return}
     if(!hinted&&performance.now()-t0>2500){hinted=true;$('tapHint').classList.remove('hidden');
       $('phaseLbl').textContent='👉 Tap the glowing ▶ on the player';}},100);
 }
