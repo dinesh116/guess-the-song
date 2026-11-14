@@ -56,7 +56,7 @@ ol.list{padding-left:22px;text-align:left}ol.list li{margin:6px 0}
 <body>
 <div class="wrap">
   <h1>🎬 Guess the Song</h1>
-  <p class="sub">Bollywood edition · 33 songs · YouTube player built in</p>
+  <p class="sub">Bollywood edition · 34 songs · YouTube player built in</p>
 
   <section id="setup">
     <div class="card">
@@ -73,6 +73,8 @@ ol.list{padding-left:22px;text-align:left}ol.list li{margin:6px 0}
       </div>
       <div style="margin-top:10px"><label>Teams (comma-separated, blank = no scoring)</label><input id="sTeams" type="text"></div>
       <div class="row" style="margin-top:10px"><label><input id="sShuffle" type="checkbox"> Shuffle song order</label></div>
+      <div class="row" style="margin-top:6px"><label><input id="sApp" type="checkbox"> <b>Play songs in the YouTube app</b> (ad-free with Premium)</label></div>
+      <div class="note">With this on, each round opens the song in your YouTube app. Come back to this page; it beeps and flashes when to pause and when to stop. Pause from the lock screen or Control Center.</div>
     </div>
     <div class="card" id="songList"></div>
     <div class="center"><button class="btn big" id="startBtn">Start the game ▶</button></div>
@@ -91,7 +93,8 @@ ol.list{padding-left:22px;text-align:left}ol.list li{margin:6px 0}
       
       
 
-      <div id="vReady"><button class="btn big" id="introBtn">▶ Play the intro</button></div>
+      <div id="vReady"><button class="btn big" id="introBtn">▶ Play the intro</button>
+        <a class="btn big hidden" id="appLink" style="background:#ff0000" target="_blank" rel="noopener">▶ Play intro in YouTube app</a></div>
 
       <div id="vCount" class="hidden">
         <div class="ring"><svg width="170" height="170"><circle cx="85" cy="85" r="74" stroke="#3d1f33" stroke-width="12" fill="none"/><circle id="arc" cx="85" cy="85" r="74" stroke="#ff4f9a" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="465" stroke-dashoffset="0"/></svg><div class="n" id="cnt">10</div></div>
@@ -108,7 +111,7 @@ ol.list{padding-left:22px;text-align:left}ol.list li{margin:6px 0}
         <div class="note" id="aSing"></div>
         <div class="bar"><div id="prog"></div></div>
         <div class="note" id="playLeft"></div>
-        <div class="row" style="justify-content:center;margin-top:12px"><button class="btn" id="nextBtn">Next song →</button></div>
+        <div class="row" style="justify-content:center;margin-top:12px"><a class="btn hidden" id="appLink2" style="background:#ff0000" target="_blank" rel="noopener">▶ Play song in YouTube app</a><button class="btn" id="nextBtn">Next song →</button></div>
       </div>
 
       <div class="row" style="justify-content:center;margin-top:14px">
@@ -169,15 +172,16 @@ const SONGS=[
  {t:"Ajeeb Dastan Hai Yeh",f:"Dil Apna Aur Preet Parai",y:1960,s:"Lata Mangeshkar",yt:"oN-_7lcOl1A"},
  {t:"Yeh Chand Sa Roshan Chehra",f:"Kashmir Ki Kali",y:1964,s:"Mohammed Rafi",yt:"X5jWsaoBf-0"},
  {t:"Chalte Chalte Mere Yeh Geet",f:"Chalte Chalte",y:1976,s:"Kishore Kumar",yt:"bQkRBvIBkeo"},
- {t:"Abhi Na Jao Chhod Kar",f:"Hum Dono",y:1961,s:"Mohammed Rafi & Asha Bhosle",yt:"YHd3rYyP9Yk"}
+ {t:"Abhi Na Jao Chhod Kar",f:"Hum Dono",y:1961,s:"Mohammed Rafi & Asha Bhosle",yt:"YHd3rYyP9Yk"},
+ {t:"Loote Koi Man Ka Nagar",f:"Abhimaan",y:1973,s:"Lata Mangeshkar & Manhar Udhas",yt:"qKC_HJtBGoo"}
 ];
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem('gtyt2_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('gtyt2_'+k,JSON.stringify(v))}catch(e){}}};
-let S=store.get('settings',{intro:10,guess:20,play:60,teams:"Team A, Team B",shuffle:false});
+let S=store.get('settings',{intro:10,guess:20,play:60,teams:"Team A, Team B",shuffle:false,app:true});
 let starts=store.get('starts',{});
-$('sIntro').value=S.intro;$('sGuess').value=S.guess;$('sPlay').value=S.play;$('sTeams').value=S.teams;$('sShuffle').checked=S.shuffle;
-function saveSettings(){S={intro:+$('sIntro').value||10,guess:+$('sGuess').value||0,play:+$('sPlay').value||60,teams:$('sTeams').value,shuffle:$('sShuffle').checked};store.set('settings',S)}
-['sIntro','sGuess','sPlay','sTeams','sShuffle'].forEach(id=>$(id).addEventListener('change',saveSettings));
+$('sIntro').value=S.intro;$('sGuess').value=S.guess;$('sPlay').value=S.play;$('sTeams').value=S.teams;$('sShuffle').checked=S.shuffle;$('sApp').checked=S.app!==false;
+function saveSettings(){S={intro:+$('sIntro').value||10,guess:+$('sGuess').value||0,play:+$('sPlay').value||60,teams:$('sTeams').value,shuffle:$('sShuffle').checked,app:$('sApp').checked};store.set('settings',S)}
+['sIntro','sGuess','sPlay','sTeams','sShuffle','sApp'].forEach(id=>$(id).addEventListener('change',saveSettings));
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 const st=i=>+starts[i]||0;
 $('songList').innerHTML='<h2>Songs (host view: has answers)</h2><div class="note" style="margin-bottom:6px">“Start at” skips silence or a spoken intro (seconds). Leave 0 to start at the very beginning.</div>'+SONGS.map((s,i)=>`<div class="song"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><div><div class="t">${i+1}. ${esc(s.t)}</div><div class="m">${esc(s.f)} (${s.y}) · ${esc(s.s)}${s.v?' · <i>'+esc(s.v)+'</i>':''}</div></div><label style="white-space:nowrap">Start at <input type="number" min="0" style="width:64px" value="${st(i)}" data-s="${i}"></label></div></div>`).join('');
@@ -199,6 +203,8 @@ const vidNow=()=>{try{return (yp.getVideoData()||{}).video_id}catch(e){return ''
 /* ---------- helpers ---------- */
 let order=[],idx=0,scores={},teams=[],phase='ready',timer=null,endAt=0,lastT=0,audioCtx=null,musicPhase=false;
 const ci=()=>order[idx];
+const APP=()=>S.app!==false;
+const appHref=()=>{const s=SONGS[order[idx]],t=st(order[idx]);return `https://www.youtube.com/watch?v=${s.yt}${t?'&t='+t+'s':''}`};
 const cur=()=>SONGS[ci()];
 function show(id){['setup','game','end'].forEach(x=>$(x).classList.toggle('hidden',x!==id));window.scrollTo(0,0)}
 function beep(freq=880,ms=180,times=1){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();for(let k=0;k<times;k++){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=freq;o.connect(g);g.connect(audioCtx.destination);const t=audioCtx.currentTime+k*(ms/1000+.08);g.gain.setValueAtTime(.3,t);g.gain.exponentialRampToValueAtTime(.001,t+ms/1000);o.start(t);o.stop(t+ms/1000)}}catch(e){}}
@@ -244,22 +250,32 @@ function loadRound(){
   $('cover').classList.remove('hidden');
   try{if(yp&&yp.cueVideoById)yp.cueVideoById({videoId:s.yt,startSeconds:st(ci())})}catch(e){}
   $('prevBtn').disabled=idx===0;
+  const a=APP();
+  $('playerBox').classList.toggle('hidden',a);$('ppBtn').classList.toggle('hidden',a);
+  $('introBtn').classList.toggle('hidden',a);$('appLink').classList.toggle('hidden',!a);$('appLink').href=appHref();
+  $('appLink2').classList.add('hidden');
 }
 function startIntro(){
   phase='intro';
   $('vReady').classList.add('hidden');$('vCount').classList.remove('hidden');$('vReveal').classList.add('hidden');
   $('pauseCue').classList.add('hidden');$('replayBtn').classList.add('hidden');
   $('phaseLbl').textContent='🎧 Listen…';setRing(S.intro,S.intro,'#ff4f9a');
+  if(APP()){setTimeout(()=>countdown(S.intro,l=>setRing(l,S.intro,'#ff4f9a'),endIntro,false),1500);return}
   playFromStart(()=>{ $('phaseLbl').textContent='🎧 Listen…';
     countdown(S.intro,l=>setRing(l,S.intro,'#ff4f9a'),endIntro,true);});
 }
 function endIntro(){
   ypPause();
-  phase='guess';$('phaseLbl').textContent='🤔 Guess the song!';$('replayBtn').classList.remove('hidden');
+  if(APP()){beep(988,260,3);$('pauseCue').classList.remove('hidden');setTimeout(()=>$('pauseCue').classList.add('hidden'),3000)}
+  phase='guess';$('phaseLbl').textContent=APP()?'⏸ Pause YouTube · Guess the song!':'🤔 Guess the song!';$('replayBtn').classList.toggle('hidden',APP());
   if(S.guess>0)countdown(S.guess,l=>setRing(l,S.guess,'#f6c453'),()=>{$('phaseLbl').textContent="⏰ Time's up!";beep(440,400)},false);
   else{setRing(0,0,'#f6c453');$('cnt').textContent='?'}
 }
 $('introBtn').onclick=startIntro;
+$('appLink').addEventListener('click',()=>{try{audioCtx&&audioCtx.resume()}catch(e){}startIntro()});
+$('appLink2').addEventListener('click',()=>{$('appLink2').classList.add('hidden');
+  setTimeout(()=>countdown(S.play,l=>{$('prog').style.width=(100*(1-l/S.play))+'%';$('playLeft').textContent=`${Math.ceil(l)}s left`},
+    ()=>{beep(988,260,3);$('playLeft').textContent='⏹ Stop the song · Tap Next song';$('phaseLbl').textContent='⏹ Stop the song'},false),1500)});
 $('replayBtn').onclick=startIntro;
 function reveal(){
   clearInterval(window._waitIv);$('tapHint').classList.add('hidden');
@@ -267,6 +283,7 @@ function reveal(){
   $('vCount').classList.add('hidden');$('vReveal').classList.remove('hidden');$('phaseLbl').textContent='🎉 It was…';
   $('aTitle').textContent=s.t;$('aFilm').textContent=`${s.f} (${s.y})`;$('aSing').textContent=s.s;
   $('playLeft').textContent='Starting…';$('prog').style.width='0%';
+  if(APP()){$('appLink2').classList.remove('hidden');$('appLink2').href=appHref();$('playLeft').textContent='Tap ▶ to play the song in YouTube';return}
   playFromStart(()=>{$('phaseLbl').textContent='🎉 It was…';countdown(S.play,l=>{$('prog').style.width=(100*(1-l/S.play))+'%';$('playLeft').textContent=playing()?`${Math.ceil(l)}s left`:`Paused · ${Math.ceil(l)}s left`},
     ()=>{ypPause();$('playLeft').textContent='Done! Tap Next song.'},true)});
 }
